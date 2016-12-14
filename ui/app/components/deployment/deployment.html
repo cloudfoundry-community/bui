@@ -1,0 +1,14 @@
+<article class="content">
+    <div class="title-block">
+        {{name}}
+        <ul class="nav nav-pills pull-right">
+            <li class="nav-item">
+                <a ui-sref-active="active" class="nav-link" ui-sref="deployment.index({name: name})">Home</a>
+            </li>
+            <li class="nav-item">
+                <a ui-sref-active="active" class="nav-link" ui-sref="deployment.manifest({name: name})">Manifest</a>
+            </li>
+        </ul>
+    </div>
+    <div ui-view></div>
+</article>

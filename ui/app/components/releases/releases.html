@@ -1,0 +1,63 @@
+<article class="content">
+    <div class="title-block">
+        <h3 class="title"><em class="fa fa-upload"></em> Releases</h3>
+    </div>
+    <section class="section" ng-repeat="release in releases">
+        <div class="row">
+            <div class="col col-xs-12 col-sm-12 col-md-12 col-xl-12 history-col">
+                <div class="card sameheight-item" data-exclude="xs">
+                    <div class="card-header card-header-sm bordered">
+                        <div class="header-block">
+                            <h3 class="title">{{release.name}}</h3> </div>
+                    </div>
+                    <div class="card-block">
+                        <div class="table-flip-scroll">
+                            <table class="table table-striped table-hover flip-content">
+                                <thead class="flip-header">
+                                    <tr>
+                                        <th>
+                                            Version
+                                        </th>
+                                        <th>
+                                            Commit Hash
+                                        </th>
+                                        <th>
+                                            Uncommited Changes
+                                        </th>
+                                        <th>
+                                            Currently Deployed
+                                        </th>
+                                        <th>
+                                            Job Names
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="release_version in release.release_versions">
+                                        <td>
+                                            {{release_version.version}}
+                                        </td>
+                                        <td>
+                                            {{release_version.commit_hash}}
+                                        </td>
+                                        <td>
+                                            <span class="label label-{{ getLabel(release_version.uncommitted_changes) }}">{{release_version.uncommitted_changes}}</span>
+                                        </td>
+                                        <td>
+                                            <span class="label label-{{ getLabel(release_version.currently_deployed) }}">{{release_version.currently_deployed}}</span>
+                                        </td>
+                                        <td>
+                                            <div ng-repeat="job in release_version.job_names">
+                                              {{job}}<br/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</article>

@@ -1,0 +1,4 @@
+listen_addr: :9304
+web_root: ui
+cookie_secret: my-secret-cookie
+bosh_addr: https://10.58.111.4:25555

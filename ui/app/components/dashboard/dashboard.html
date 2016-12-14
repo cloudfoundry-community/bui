@@ -1,0 +1,111 @@
+<article class="content dashboard-page">
+    <section class="section">
+        <div class="row sameheight-container">
+            <div class="col col-xs-12 col-sm-12 col-md-12 col-xl-12 history-col">
+                <div class="card sameheight-item" data-exclude="xs">
+                    <div class="card-header card-header-sm bordered">
+                        <div class="header-block">
+                            <em class="fa fa-tasks"></em>
+                            <h3 class="title">BOSH Info</h3> </div>
+                    </div>
+                    <div class="card-block">
+                        <div class="table-flip-scroll">
+                            <table class="table table-striped table-hover flip-content">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Name
+                                        </td>
+                                        <td>
+                                            {{info.name}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            UUID
+                                        </td>
+                                        <td>
+                                            {{info.uuid}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Version
+                                        </td>
+                                        <td>
+                                            {{info.version}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            CPI
+                                        </td>
+                                        <td>
+                                            {{info.cpi}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="title-block" ng-show="running_tasks.length > 0">
+      <h3 class="title">Running tasks</h3>
+    </div>
+      <section class="section" ng-show="running_tasks.length > 0">
+          <div class="row">
+              <div class="col col-xs-12 col-sm-12 col-md-12 col-xl-12 history-col">
+                  <div class="card sameheight-item" data-exclude="xs">
+                      <div class="card-block">
+                          <div class="table-flip-scroll">
+                              <table class="table table-striped table-hover flip-content">
+                                  <thead class="flip-header">
+                                    <tr>
+                                      <th>
+                                        ID
+                                      </th>
+                                      <th>
+                                        Deployment
+                                      </th>
+                                      <th>
+                                        Description
+                                      </th>
+                                      <th>
+                                        State
+                                      </th>
+                                      <th>
+                                        User
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr ng-repeat="task in running_tasks">
+                                          <td>
+                                             {{task.id}}
+                                          </td>
+                                          <td>
+                                              {{task.deployment}}
+                                          </td>
+                                          <td>
+                                              {{task.description}}
+                                          </td>
+                                          <td>
+                                              {{task.state}}
+                                          </td>
+                                          <td>
+                                              {{task.user}}
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          </section>
+
+</article>

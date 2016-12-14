@@ -1,0 +1,61 @@
+<article class="content">
+  <div class="title-block">
+    <h3 class="title"><em class="fa fa-archive"></em> Stemcells</h3>
+  </div>
+    <section class="section">
+        <div class="row">
+            <div class="col col-xs-12 col-sm-12 col-md-12 col-xl-12 history-col">
+                <div class="card sameheight-item" data-exclude="xs">
+                    <div class="card-block">
+                        <div class="table-flip-scroll">
+                            <table class="table table-striped table-hover flip-content">
+                                <thead class="flip-header">
+                                  <tr>
+                                    <th>
+                                      Name
+                                    </th>
+                                    <th>
+                                      Operating System
+                                    </th>
+                                    <th>
+                                      Version
+                                    </th>
+                                    <th>
+                                      CID
+                                    </th>
+                                    <th>
+                                      Deployments
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="stemcell in stemcells">
+                                        <td>
+                                           {{stemcell.name}}
+                                        </td>
+                                        <td>
+                                            {{stemcell.operating_system}}
+                                        </td>
+                                        <td>
+                                            {{stemcell.version}}
+                                        </td>
+                                        <td>
+                                            {{stemcell.cid}}
+                                        </td>
+                                        <td>
+                                           <div ng-repeat="deployment in stemcell.deployments">
+                                             {{deployment.name}}
+                                           </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </section>
+</article>
+<script src="js/vendor.js"></script>
+<script src="js/app.js"></script>
