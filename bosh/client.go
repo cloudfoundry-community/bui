@@ -4,9 +4,13 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 //Client used to communicate with BOSH
@@ -21,13 +25,19 @@ type Config struct {
 	SkipSslValidation bool
 }
 
+type Auth struct {
+	Username string
+	Password string
+	Token    string
+}
+
 // request is used to help build up a request
 type request struct {
 	method string
 	url    string
-	header map[string]string
+	Header map[string]string
 	params url.Values
-	body   io.Reader
+	Body   io.Reader
 	obj    interface{}
 }
 
@@ -56,11 +66,45 @@ func NewClient(config *Config) (*Client, error) {
 			},
 		},
 	}
+	config.HttpClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		if len(via) > 10 {
+			return fmt.Errorf("stopped after 10 redirects")
+		}
+		req.URL.Host = strings.TrimPrefix(config.BOSHAddress, req.URL.Scheme+"://")
+		req.Header.Add("User-Agent", "bui")
+		req.Header.Add("Authorization", via[0].Header.Get("Authorization"))
+		req.Header.Del("Referer")
+		return nil
+	}
 	client := &Client{
 		config: *config,
 	}
 
 	return client, nil
+}
+
+// GetInfo returns BOSH Info
+func (c *Client) GetInfo() (info Info, err error) {
+	r := c.NewRequest("GET", "/info")
+	resp, err := c.DoRequest(r)
+
+	if err != nil {
+		log.Printf("Error requesting info %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading info request %v", resBody)
+		return
+	}
+	err = json.Unmarshal(resBody, &info)
+	if err != nil {
+		log.Printf("Error unmarshaling info %v", err)
+		return
+	}
+	return
 }
 
 // NewRequest is used to create a new request
@@ -69,24 +113,24 @@ func (c *Client) NewRequest(method, path string) *request {
 		method: method,
 		url:    c.config.BOSHAddress + path,
 		params: make(map[string][]string),
-		header: make(map[string]string),
+		Header: make(map[string]string),
 	}
 	return r
 }
 
 // DoAuthRequest runs a request with our client
-func (c *Client) DoAuthRequest(r *request, username, password, token string) (*http.Response, error) {
+func (c *Client) DoAuthRequest(r *request, auth Auth) (*http.Response, error) {
 	req, err := r.toHTTP()
 	if err != nil {
 		return nil, err
 	}
-	for key, value := range r.header {
+	for key, value := range r.Header {
 		req.Header.Add(key, value)
 	}
-	if token != "" {
-		req.Header.Add("Authorization", "Bearer "+token)
+	if auth.Token != "" {
+		req.Header.Add("Authorization", "Bearer "+auth.Token)
 	} else {
-		req.SetBasicAuth(username, password)
+		req.SetBasicAuth(auth.Username, auth.Password)
 	}
 	req.Header.Add("User-Agent", "bui")
 	resp, err := c.config.HttpClient.Do(req)
@@ -98,7 +142,7 @@ func (c *Client) DoRequest(r *request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	for key, value := range r.header {
+	for key, value := range r.Header {
 		req.Header.Add(key, value)
 	}
 	req.Header.Add("User-Agent", "bui")
@@ -110,16 +154,16 @@ func (c *Client) DoRequest(r *request) (*http.Response, error) {
 func (r *request) toHTTP() (*http.Request, error) {
 
 	// Check if we should encode the body
-	if r.body == nil && r.obj != nil {
+	if r.Body == nil && r.obj != nil {
 		if b, err := encodeBody(r.obj); err != nil {
 			return nil, err
 		} else {
-			r.body = b
+			r.Body = b
 		}
 	}
 
 	// Create the HTTP request
-	return http.NewRequest(r.method, r.url, r.body)
+	return http.NewRequest(r.method, r.url, r.Body)
 }
 
 // decodeBody is used to JSON decode a body
