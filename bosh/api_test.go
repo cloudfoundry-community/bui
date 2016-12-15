@@ -156,6 +156,14 @@ var _ = Describe("Api", func() {
 				Expect(tasks[0].State).Should(Equal("processing"))
 				Expect(tasks[0].Description).Should(Equal("run errand acceptance_tests from deployment cf-warden"))
 			})
+
+			It("can get running tasks", func() {
+				tasks, err := client.GetTasks(auth)
+				Expect(err).Should(BeNil())
+				Expect(tasks[0].ID).Should(Equal(1180))
+				Expect(tasks[0].State).Should(Equal("processing"))
+				Expect(tasks[0].Description).Should(Equal("run errand acceptance_tests from deployment cf-warden"))
+			})
 		})
 
 		Describe("Test get deployment manifest", func() {
@@ -224,6 +232,47 @@ var _ = Describe("Api", func() {
 				Expect(vms[0].Vitals.CPU.Sys).Should(Equal("9.1"))
 				Expect(vms[0].Vitals.CPU.User).Should(Equal("2.1"))
 				Expect(vms[0].Vitals.CPU.Wait).Should(Equal("1.7"))
+			})
+		})
+
+		Describe("Test post ssh", func() {
+			BeforeEach(func() {
+				setupMultiple([]MockRoute{
+					{"POST", "/deployments/foo/ssh", "", server.URL + "/tasks/2"},
+					{"GET", "/tasks/2", sshTask, ""},
+					{"GET", "/tasks/2", sshTask, ""},
+					{"GET", "/tasks/2/output", sshResult, ""},
+				}, "basic")
+
+				config := &Config{
+					BOSHAddress: server.URL,
+				}
+
+				client, _ = NewClient(config)
+				auth = Auth{
+					Username: "test",
+					Password: "test",
+					Token:    "",
+				}
+			})
+
+			AfterEach(func() {
+				teardown()
+			})
+
+			It("can setup ssh", func() {
+				sshRequest := SSHRequest{
+					Command:        "setup",
+					DeploymentName: "foo",
+					Target: Target{
+						Job: "cell_z1",
+						Ids: []string{"1"},
+					},
+				}
+				sshResponse, err := client.SSH(sshRequest, auth)
+				Expect(err).Should(BeNil())
+				Expect(sshResponse.Status).Should(Equal("done"))
+				Expect(sshResponse.Job).Should(Equal("cell_z1"))
 			})
 		})
 

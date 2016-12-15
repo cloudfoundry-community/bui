@@ -101,7 +101,7 @@ func (c *Client) GetInfo() (info Info, err error) {
 	}
 	err = json.Unmarshal(resBody, &info)
 	if err != nil {
-		log.Printf("Error unmarshaling info %v", err)
+		log.Printf("Error unmarshalling info %v", err)
 		return
 	}
 	return
@@ -119,7 +119,7 @@ func (c *Client) NewRequest(method, path string) *request {
 }
 
 // DoAuthRequest runs a request with our client
-func (c *Client) DoAuthRequest(r *request, auth Auth) (*http.Response, error) {
+func (c *Client) DoAuthRequest(r *request, auth Auth) ([]byte, error) {
 	req, err := r.toHTTP()
 	if err != nil {
 		return nil, err
@@ -134,7 +134,15 @@ func (c *Client) DoAuthRequest(r *request, auth Auth) (*http.Response, error) {
 	}
 	req.Header.Add("User-Agent", "bui")
 	resp, err := c.config.HttpClient.Do(req)
-	return resp, err
+	if err != nil {
+		return []byte{}, err
+	}
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+	defer resp.Body.Close()
+	return resBody, err
 }
 
 func (c *Client) DoRequest(r *request) (*http.Response, error) {

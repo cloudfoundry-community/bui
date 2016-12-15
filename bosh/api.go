@@ -3,9 +3,7 @@ package bosh
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"log"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -14,21 +12,14 @@ import (
 // GetStemcells from given BOSH
 func (c *Client) GetStemcells(auth Auth) (stemcells []Stemcell, err error) {
 	r := c.NewRequest("GET", "/stemcells")
-	resp, err := c.DoAuthRequest(r, auth)
-	defer resp.Body.Close()
-
+	respBody, err := c.DoAuthRequest(r, auth)
 	if err != nil {
 		log.Printf("Error requesting stemcells  %v", err)
 		return
 	}
-	resBody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(respBody, &stemcells)
 	if err != nil {
-		log.Printf("Error reading stemcells request %v", resBody)
-		return
-	}
-	err = json.Unmarshal(resBody, &stemcells)
-	if err != nil {
-		log.Printf("Error unmarshaling stemcells %v", err)
+		log.Printf("Error unmarshalling stemcells %v", err)
 		return
 	}
 	return
@@ -37,22 +28,15 @@ func (c *Client) GetStemcells(auth Auth) (stemcells []Stemcell, err error) {
 // GetReleases from given BOSH
 func (c *Client) GetReleases(auth Auth) (releases []Release, err error) {
 	r := c.NewRequest("GET", "/releases")
-	resp, err := c.DoAuthRequest(r, auth)
+	respBody, err := c.DoAuthRequest(r, auth)
 
 	if err != nil {
 		log.Printf("Error requesting releases  %v", err)
 		return
 	}
-	defer resp.Body.Close()
-
-	resBody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(respBody, &releases)
 	if err != nil {
-		log.Printf("Error reading releases request %v", resBody)
-		return
-	}
-	err = json.Unmarshal(resBody, &releases)
-	if err != nil {
-		log.Printf("Error unmarshaling releases %v", err)
+		log.Printf("Error unmarshalling releases %v", err)
 		return
 	}
 	return
@@ -61,22 +45,14 @@ func (c *Client) GetReleases(auth Auth) (releases []Release, err error) {
 // GetDeployments from given BOSH
 func (c *Client) GetDeployments(auth Auth) (deployments []Deployment, err error) {
 	r := c.NewRequest("GET", "/deployments")
-	resp, err := c.DoAuthRequest(r, auth)
-
+	respBody, err := c.DoAuthRequest(r, auth)
 	if err != nil {
 		log.Printf("Error requesting deployments  %v", err)
 		return
 	}
-	defer resp.Body.Close()
-
-	resBody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(respBody, &deployments)
 	if err != nil {
-		log.Printf("Error reading deployments request %v", resBody)
-		return
-	}
-	err = json.Unmarshal(resBody, &deployments)
-	if err != nil {
-		log.Printf("Error unmarshaling deployments %v", err)
+		log.Printf("Error unmarshalling deployments %v", err)
 		return
 	}
 	return
@@ -85,45 +61,17 @@ func (c *Client) GetDeployments(auth Auth) (deployments []Deployment, err error)
 // GetDeployment from given BOSH
 func (c *Client) GetDeployment(name string, auth Auth) (manifest Manifest, err error) {
 	r := c.NewRequest("GET", "/deployments/"+name)
-	resp, err := c.DoAuthRequest(r, auth)
+	respBody, err := c.DoAuthRequest(r, auth)
 
 	if err != nil {
 		log.Printf("Error requesting deployment manifest %v", err)
 		return
 	}
-	defer resp.Body.Close()
-
-	resBody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(respBody, &manifest)
 	if err != nil {
-		log.Printf("Error reading deployment manifest request %v", resBody)
+		log.Printf("Error unmarshalling deployment manifest %v", err)
 		return
 	}
-	err = json.Unmarshal(resBody, &manifest)
-	if err != nil {
-		log.Printf("Error unmarshaling deployment manifest %v", err)
-		return
-	}
-	return
-}
-
-// DeleteDeployment from given BOSH
-func (c *Client) DeleteDeployment(name string, auth Auth) (task Task, err error) {
-	r := c.NewRequest("DELETE", "/deployments/"+name+"?force=true")
-	resp, err := c.DoAuthRequest(r, auth)
-
-	if err != nil {
-		log.Printf("Error requesting deleting deployment %v", err)
-		return
-	}
-	defer resp.Body.Close()
-	url, _ := resp.Location()
-	re, _ := regexp.Compile(`(\d+)$`)
-	stringId := re.FindStringSubmatch(url.Path)
-	id, err := strconv.Atoi(stringId[0])
-	if err != nil {
-		return
-	}
-	task, err = c.GetTask(id, auth)
 	return
 }
 
@@ -134,22 +82,14 @@ func (c *Client) CreateDeployment(manifest string, auth Auth) (task Task, err er
 	r.Body = buffer
 	r.Header["Content-Type"] = "text/yaml"
 
-	resp, err := c.DoAuthRequest(r, auth)
-
+	respBody, err := c.DoAuthRequest(r, auth)
 	if err != nil {
 		log.Printf("Error requesting create deployment %v", err)
 		return
 	}
-	defer resp.Body.Close()
-
-	resBody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(respBody, &task)
 	if err != nil {
-		log.Printf("Error reading task request %v", resBody)
-		return
-	}
-	err = json.Unmarshal(resBody, &task)
-	if err != nil {
-		log.Printf("Error unmarshaling task %v", err)
+		log.Printf("Error unmarshalling task %v", err)
 		return
 	}
 	return
@@ -159,41 +99,24 @@ func (c *Client) CreateDeployment(manifest string, auth Auth) (task Task, err er
 func (c *Client) GetDeploymentVMs(name string, auth Auth) (vms []VM, err error) {
 	var task Task
 	r := c.NewRequest("GET", "/deployments/"+name+"/vms?format=full")
-	resp, err := c.DoAuthRequest(r, auth)
+	respBody, err := c.DoAuthRequest(r, auth)
 
 	if err != nil {
 		log.Printf("Error requesting deployment vms %v", err)
 		return
 	}
-	defer resp.Body.Close()
-
-	resBody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(respBody, &task)
 	if err != nil {
-		log.Printf("Error reading deployment vms request %v", resBody)
+		log.Printf("Error unmarshalling tasks %v", err)
 		return
 	}
-	err = json.Unmarshal(resBody, &task)
-	if err != nil {
-		log.Printf("Error unmarshaling tasks %v", err)
-		return
-	}
-	for {
-		taskStatus, err := c.GetTask(task.ID, auth)
-		if err != nil {
-			log.Printf("Error getting task %v", err)
-		}
-		if taskStatus.State == "done" {
-			break
-		}
-		time.Sleep(1 * time.Second)
-	}
-	output := c.GetTaskResult(task.ID, auth)
+	output := c.WaitForTaskResult(task.ID, auth)
 	for _, value := range output {
 		if len(value) > 0 {
 			var vm VM
 			err = json.Unmarshal([]byte(value), &vm)
 			if err != nil {
-				log.Printf("Error unmarshaling vms %v %v", value, err)
+				log.Printf("Error unmarshalling vms %v %v", value, err)
 				return
 			}
 			vms = append(vms, vm)
@@ -202,26 +125,62 @@ func (c *Client) GetDeploymentVMs(name string, auth Auth) (vms []VM, err error) 
 	return
 }
 
+// SSH from given BOSH
+func (c *Client) SSH(sshRequest SSHRequest, auth Auth) (sshResponse SSHResponse, err error) {
+	var task Task
+	r := c.NewRequest("GET", "/deployments/"+sshRequest.DeploymentName+"/ssh")
+
+	r.Header["Content-Type"] = "application/json"
+	respBody, err := c.DoAuthRequest(r, auth)
+
+	if err != nil {
+		log.Printf("Error requesting ssh %v", err)
+		return
+	}
+	err = json.Unmarshal(respBody, &task)
+	if err != nil {
+		log.Printf("Error unmarshalling tasks for ssh result %v", err)
+		return
+	}
+	output := c.WaitForTaskResult(task.ID, auth)
+	err = json.Unmarshal([]byte(output[0]), &sshResponse)
+	if err != nil {
+		log.Printf("Error unmarshalling ssh result %v %v", output[0], err)
+		return
+	}
+	return
+}
+
 // GetTasks from given BOSH
 func (c *Client) GetTasks(auth Auth) (tasks []Task, err error) {
 	r := c.NewRequest("GET", "/tasks")
-	resp, err := c.DoAuthRequest(r, auth)
+	respBody, err := c.DoAuthRequest(r, auth)
 
 	if err != nil {
 		log.Printf("Error requesting tasks  %v", err)
 		return
 	}
 
-	defer resp.Body.Close()
-
-	resBody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(respBody, &tasks)
 	if err != nil {
-		log.Printf("Error reading tasks request %v", resBody)
+		log.Printf("Error unmarshalling tasks %v", err)
 		return
 	}
-	err = json.Unmarshal(resBody, &tasks)
+	return
+}
+
+// GetRunningTasks from given BOSH
+func (c *Client) GetRunningTasks(auth Auth) (tasks []Task, err error) {
+	r := c.NewRequest("GET", "/tasks?state=queued,processing,cancelling&verbose=2")
+	respBody, err := c.DoAuthRequest(r, auth)
+
 	if err != nil {
-		log.Printf("Error unmarshaling tasks %v", err)
+		log.Printf("Error requesting tasks  %v", err)
+		return
+	}
+	err = json.Unmarshal(respBody, &tasks)
+	if err != nil {
+		log.Printf("Error unmarshalling tasks %v", err)
 		return
 	}
 	return
@@ -231,22 +190,15 @@ func (c *Client) GetTasks(auth Auth) (tasks []Task, err error) {
 func (c *Client) GetTask(id int, auth Auth) (task Task, err error) {
 	stringID := strconv.Itoa(id)
 	r := c.NewRequest("GET", "/tasks/"+stringID)
-	resp, err := c.DoAuthRequest(r, auth)
+	respBody, err := c.DoAuthRequest(r, auth)
 
 	if err != nil {
 		log.Printf("Error requesting task %v", err)
 		return
 	}
-	defer resp.Body.Close()
-
-	resBody, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(respBody, &task)
 	if err != nil {
-		log.Printf("Error reading task request %v", resBody)
-		return
-	}
-	err = json.Unmarshal(resBody, &task)
-	if err != nil {
-		log.Printf("Error unmarshaling task %v", err)
+		log.Printf("Error unmarshalling task %v", err)
 		return
 	}
 	return
@@ -256,17 +208,34 @@ func (c *Client) GetTask(id int, auth Auth) (task Task, err error) {
 func (c *Client) GetTaskResult(id int, auth Auth) (output []string) {
 	stringID := strconv.Itoa(id)
 	r := c.NewRequest("GET", "/tasks/"+stringID+"/output?type=result")
-	resp, err := c.DoAuthRequest(r, auth)
+	respBody, err := c.DoAuthRequest(r, auth)
 
 	if err != nil {
 		log.Printf("Error requesting task %v", err)
 	}
-	defer resp.Body.Close()
+	output = strings.Split(string(respBody), "\n")
+	return
+}
 
-	resBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("Error reading task request %v", resBody)
+// WaitForTaskResult from given BOSH
+func (c *Client) WaitForTaskResult(id int, auth Auth) (output []string) {
+	for {
+		taskStatus, err := c.GetTask(id, auth)
+		if err != nil {
+			log.Printf("Error getting task %v", err)
+		}
+		if taskStatus.State == "done" {
+			break
+		}
+		time.Sleep(1 * time.Second)
 	}
-	output = strings.Split(string(resBody), "\n")
+	stringID := strconv.Itoa(id)
+	r := c.NewRequest("GET", "/tasks/"+stringID+"/output?type=result")
+	respBody, err := c.DoAuthRequest(r, auth)
+
+	if err != nil {
+		log.Printf("Error requesting task %v", err)
+	}
+	output = strings.Split(string(respBody), "\n")
 	return
 }

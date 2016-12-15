@@ -121,3 +121,40 @@ type Task struct {
 	Result      string `json:"result"`
 	User        string `json:"user"`
 }
+
+// SSHRequest struct
+type SSHRequest struct {
+	Command        string            `json:"command"`
+	DeploymentName string            `json:"deployment_name"`
+	Target         Target            `json:"target"`
+	Params         map[string]string `json:"params"`
+}
+
+// Target struct
+type Target struct {
+	Job     string   `json:"job"`
+	Indexes []string `json:"indexes"`
+	Ids     []string `json:"ids"`
+}
+
+// Params struct
+type Params struct {
+	User      string `json:"user"`
+	Password  string `json:"password"`
+	PublicKey string `json:"public_key"`
+}
+
+// SSHResponse struct
+type SSHResponse struct {
+	Status string
+
+	Job   string
+	Index *int
+	ID    string
+
+	IP            string
+	HostPublicKey string `json:"host_public_key"`
+
+	GatewayUser string `json:"gateway_user"`
+	GatewayHost string `json:"gateway_host"`
+}
