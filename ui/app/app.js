@@ -1,11 +1,14 @@
 angular.module('bui', [
     'ui.ace',
     'ui.router',
+    'ngCookies',
     'master',
     'dashboard',
     'login',
     'deployment',
     'deploymentManifest',
+    'deploymentInstances',
+    'deploymentSSH',
     'deploymentIndex',
     'deployments',
     'stemcells',
@@ -45,6 +48,16 @@ config(['$stateProvider', '$urlRouterProvider',
                 url: '/manifest',
                 templateUrl: 'app/components/deployment/manifest.html',
                 controller: 'DeploymentManifestController'
+            })
+            .state('deployment.instances', {
+                url: '/instances',
+                templateUrl: 'app/components/deployment/instances.html',
+                controller: 'DeploymentInstancesController'
+            })
+            .state('deployment.ssh', {
+                url: '/vms/:vm_name/ssh',
+                templateUrl: 'app/components/deployment/ssh.html',
+                controller: 'DeploymentSSHController'
             })
             .state('stemcells', {
                 url: '/stemcells/',

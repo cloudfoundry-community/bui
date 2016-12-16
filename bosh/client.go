@@ -145,6 +145,28 @@ func (c *Client) DoAuthRequest(r *request, auth Auth) ([]byte, error) {
 	return resBody, err
 }
 
+// DoAuthRequestRaw runs a request with our client
+func (c *Client) DoAuthRequestRaw(r *request, auth Auth) (*http.Response, error) {
+	req, err := r.toHTTP()
+	if err != nil {
+		return nil, err
+	}
+	for key, value := range r.Header {
+		req.Header.Add(key, value)
+	}
+	if auth.Token != "" {
+		req.Header.Add("Authorization", "Bearer "+auth.Token)
+	} else {
+		req.SetBasicAuth(auth.Username, auth.Password)
+	}
+	req.Header.Add("User-Agent", "bui")
+	resp, err := c.config.HttpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, err
+}
+
 func (c *Client) DoRequest(r *request) (*http.Response, error) {
 	req, err := r.toHTTP()
 	if err != nil {

@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/coreos/go-log/log"
@@ -34,7 +33,6 @@ func (b BOSHHandler) currentUser(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(session.Values["username"])
 	if session.Values["username"] == nil {
 		b.respond(w, http.StatusForbidden, map[string]string{
 			"error": "currently not logged in",
@@ -42,7 +40,7 @@ func (b BOSHHandler) currentUser(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	b.respond(w, http.StatusOK, map[string]string{
-		"username": session.Values["username"].(string),
+		"name": session.Values["username"].(string),
 	})
 }
 
@@ -55,8 +53,13 @@ func (b BOSHHandler) login(w http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
 	username := req.PostFormValue("username")
 	password := req.PostFormValue("password")
+	auth := bosh.Auth{
+		Username: username,
+		Password: password,
+		Token:    "",
+	}
 	r := b.BoshClient.NewRequest("GET", "/releases")
-	resp, err := b.BoshClient.DoAuthRequest(r, username, password, "")
+	resp, err := b.BoshClient.DoAuthRequestRaw(r, auth)
 	if err != nil {
 		b.respond(w, http.StatusInternalServerError, ErrorResponse{
 			Description: err.Error(),
@@ -79,173 +82,92 @@ func (b BOSHHandler) login(w http.ResponseWriter, req *http.Request) {
 }
 
 func (b BOSHHandler) info(w http.ResponseWriter, req *http.Request) {
-	r := b.BoshClient.NewRequest("GET", "/info")
-	resp, err := b.BoshClient.DoRequest(r)
+	info, err := b.BoshClient.GetInfo()
 	if err != nil {
 		b.respond(w, http.StatusInternalServerError, ErrorResponse{
 			Description: err.Error(),
 		})
 		return
 	}
-	var data []byte
-	data, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		b.respond(w, http.StatusInternalServerError, ErrorResponse{
-			Description: err.Error(),
-		})
-		return
-	}
-	w.WriteHeader(resp.StatusCode)
-	w.Write(data)
+	b.respond(w, http.StatusOK, info)
 }
 
 func (b BOSHHandler) releases(w http.ResponseWriter, req *http.Request) {
-	session, err := b.CookieSession.Get(req, "auth")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	username := session.Values["username"].(string)
-	password := session.Values["password"].(string)
-	token := session.Values["token"].(string)
-	r := b.BoshClient.NewRequest("GET", "/releases")
-	resp, err := b.BoshClient.DoAuthRequest(r, username, password, token)
+	auth := getAuthInfo(b.CookieSession, w, req)
+	releases, err := b.BoshClient.GetReleases(auth)
 	if err != nil {
 		b.respond(w, http.StatusInternalServerError, ErrorResponse{
 			Description: err.Error(),
 		})
 		return
 	}
-	var data []byte
-	data, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		b.respond(w, http.StatusInternalServerError, ErrorResponse{
-			Description: err.Error(),
-		})
-		return
-	}
-	w.WriteHeader(resp.StatusCode)
-	w.Write(data)
+	b.respond(w, http.StatusOK, releases)
 }
 
 func (b BOSHHandler) stemcells(w http.ResponseWriter, req *http.Request) {
-	session, err := b.CookieSession.Get(req, "auth")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	username := session.Values["username"].(string)
-	password := session.Values["password"].(string)
-	token := session.Values["token"].(string)
-	r := b.BoshClient.NewRequest("GET", "/stemcells")
-	resp, err := b.BoshClient.DoAuthRequest(r, username, password, token)
+	auth := getAuthInfo(b.CookieSession, w, req)
+	stemcells, err := b.BoshClient.GetStemcells(auth)
 	if err != nil {
 		b.respond(w, http.StatusInternalServerError, ErrorResponse{
 			Description: err.Error(),
 		})
 		return
 	}
-	var data []byte
-	data, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		b.respond(w, http.StatusInternalServerError, ErrorResponse{
-			Description: err.Error(),
-		})
-		return
-	}
-	w.WriteHeader(resp.StatusCode)
-	w.Write(data)
+	b.respond(w, http.StatusOK, stemcells)
 }
 
 func (b BOSHHandler) deployment(w http.ResponseWriter, req *http.Request) {
-	session, err := b.CookieSession.Get(req, "auth")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	username := session.Values["username"].(string)
-	password := session.Values["password"].(string)
-	token := session.Values["token"].(string)
+	auth := getAuthInfo(b.CookieSession, w, req)
 	vars := mux.Vars(req)
 	name := vars["name"]
 
-	r := b.BoshClient.NewRequest("GET", "/deployments/"+name)
-	resp, err := b.BoshClient.DoAuthRequest(r, username, password, token)
+	deployment, err := b.BoshClient.GetDeployment(name, auth)
 	if err != nil {
 		b.respond(w, http.StatusInternalServerError, ErrorResponse{
 			Description: err.Error(),
 		})
 		return
 	}
-	var data []byte
-	data, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		b.respond(w, http.StatusInternalServerError, ErrorResponse{
-			Description: err.Error(),
-		})
-		return
-	}
-	w.WriteHeader(resp.StatusCode)
-	w.Write(data)
+	b.respond(w, http.StatusOK, deployment)
 }
 
 func (b BOSHHandler) deployments(w http.ResponseWriter, req *http.Request) {
-	session, err := b.CookieSession.Get(req, "auth")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	username := session.Values["username"].(string)
-	password := session.Values["password"].(string)
-	token := session.Values["token"].(string)
-	r := b.BoshClient.NewRequest("GET", "/deployments")
-	resp, err := b.BoshClient.DoAuthRequest(r, username, password, token)
+	auth := getAuthInfo(b.CookieSession, w, req)
+	deployments, err := b.BoshClient.GetDeployments(auth)
 	if err != nil {
 		b.respond(w, http.StatusInternalServerError, ErrorResponse{
 			Description: err.Error(),
 		})
 		return
 	}
-	var data []byte
-	data, err = ioutil.ReadAll(resp.Body)
+	b.respond(w, http.StatusOK, deployments)
+}
+
+func (b BOSHHandler) deploymentVMs(w http.ResponseWriter, req *http.Request) {
+	auth := getAuthInfo(b.CookieSession, w, req)
+	vars := mux.Vars(req)
+	name := vars["name"]
+	deploymentVMs, err := b.BoshClient.GetDeploymentVMs(name, auth)
 	if err != nil {
 		b.respond(w, http.StatusInternalServerError, ErrorResponse{
 			Description: err.Error(),
 		})
 		return
 	}
-	w.WriteHeader(resp.StatusCode)
-	w.Write(data)
+	b.respond(w, http.StatusOK, deploymentVMs)
 }
 
 func (b BOSHHandler) running_tasks(w http.ResponseWriter, req *http.Request) {
-	session, err := b.CookieSession.Get(req, "auth")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	username := session.Values["username"].(string)
-	password := session.Values["password"].(string)
-	token := session.Values["token"].(string)
+	auth := getAuthInfo(b.CookieSession, w, req)
 
-	r := b.BoshClient.NewRequest("GET", "/tasks?state=queued,processing,cancelling&verbose=2")
-	resp, err := b.BoshClient.DoAuthRequest(r, username, password, token)
+	tasks, err := b.BoshClient.GetRunningTasks(auth)
 	if err != nil {
 		b.respond(w, http.StatusInternalServerError, ErrorResponse{
 			Description: err.Error(),
 		})
 		return
 	}
-	var data []byte
-	data, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		b.respond(w, http.StatusInternalServerError, ErrorResponse{
-			Description: err.Error(),
-		})
-		return
-	}
-	w.WriteHeader(resp.StatusCode)
-	w.Write(data)
+	b.respond(w, http.StatusOK, tasks)
 }
 
 func (b BOSHHandler) respond(w http.ResponseWriter, status int, response interface{}) {

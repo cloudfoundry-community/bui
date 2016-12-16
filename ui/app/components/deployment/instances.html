@@ -1,0 +1,71 @@
+<article class="content">
+    <div class="title-block">
+        <h3 class="title">Instances</h3>
+    </div>
+<section class="section">
+    <div class="row">
+        <div class="col col-xs-12 col-sm-12 col-md-12 col-xl-12 history-col">
+            <div class="card sameheight-item" data-exclude="xs">
+                <div class="card-block">
+                    <div class="table-flip-scroll">
+                        <table class="table table-striped table-hover flip-content">
+                            <thead class="flip-header">
+                                <tr>
+                                    <th>
+                                        Name
+                                    </th>
+                                    <th>
+                                        Index
+                                    </th>
+                                    <th>
+                                        ID
+                                    </th>
+                                    <th>
+                                        VM CID
+                                    </th>
+                                    <th>
+                                        IP(s)
+                                    </th>
+                                    <th>
+                                        State
+                                    </th>
+                                    <th>
+                                        SSH
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="instance in instances">
+                                    <td>
+                                        {{instance.job_name}}
+                                    </td>
+                                    <td>
+                                        {{instance.index}}
+                                    </td>
+                                    <td>
+                                        {{instance.id}}
+                                    </td>
+                                    <td>
+                                        {{instance.vm_cid}}
+                                    </td>
+                                    <td>
+                                      <div ng-repeat="ip in instance.ips">
+                                          {{ip}}<br/>
+                                      </div>
+                                    </td>
+                                    <td>
+                                        <span class="label label-{{ getLabel(instance.job_state) }}">{{instance.job_state}}</span>
+                                    </td>
+                                    <td>
+                                      <button type="button" class="btn btn-sm btn-primary" ui-sref="deployment.ssh({name: name, vm_name: instance.job_name + '-' + instance.index})">SSH</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</article>

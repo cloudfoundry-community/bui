@@ -3,6 +3,7 @@ package bosh
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -126,10 +127,16 @@ func (c *Client) GetDeploymentVMs(name string, auth Auth) (vms []VM, err error) 
 }
 
 // SSH from given BOSH
-func (c *Client) SSH(sshRequest SSHRequest, auth Auth) (sshResponse SSHResponse, err error) {
+func (c *Client) SSH(sshRequest SSHRequest, auth Auth) (sshResponses []SSHResponse, err error) {
 	var task Task
-	r := c.NewRequest("GET", "/deployments/"+sshRequest.DeploymentName+"/ssh")
-
+	r := c.NewRequest("POST", "/deployments/"+sshRequest.DeploymentName+"/ssh")
+	jsonRequest, err := json.Marshal(sshRequest)
+	if err != nil {
+		log.Printf("Error requesting marshal ssh %v", err)
+		return
+	}
+	buffer := bytes.NewBufferString(string(jsonRequest))
+	r.Body = buffer
 	r.Header["Content-Type"] = "application/json"
 	respBody, err := c.DoAuthRequest(r, auth)
 
@@ -137,13 +144,19 @@ func (c *Client) SSH(sshRequest SSHRequest, auth Auth) (sshResponse SSHResponse,
 		log.Printf("Error requesting ssh %v", err)
 		return
 	}
+	fmt.Println(string(respBody))
 	err = json.Unmarshal(respBody, &task)
 	if err != nil {
 		log.Printf("Error unmarshalling tasks for ssh result %v", err)
 		return
 	}
 	output := c.WaitForTaskResult(task.ID, auth)
-	err = json.Unmarshal([]byte(output[0]), &sshResponse)
+	err = json.Unmarshal([]byte(output[0]), &sshResponses)
+	if err != nil {
+		log.Printf("Error unmarshalling vms %v %v", output, err)
+		return
+	}
+	fmt.Println(output)
 	if err != nil {
 		log.Printf("Error unmarshalling ssh result %v %v", output[0], err)
 		return
@@ -224,7 +237,7 @@ func (c *Client) WaitForTaskResult(id int, auth Auth) (output []string) {
 		if err != nil {
 			log.Printf("Error getting task %v", err)
 		}
-		if taskStatus.State == "done" {
+		if taskStatus.State == "done" || taskStatus.State == "error" {
 			break
 		}
 		time.Sleep(1 * time.Second)
