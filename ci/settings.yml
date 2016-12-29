@@ -1,0 +1,22 @@
+---
+meta:
+  name:    bui
+  release: Bui
+  target:  sw
+  url:     https://ci.vsphere.starkandwayne.com
+
+  initial_version: 0.1.0
+
+  aws:
+    access_key: (( vault "secret/aws/cfcommunity:access" ))
+    secret_key: (( vault "secret/aws/cfcommunity:secret" ))
+
+  github:
+    owner:  cloudfoundry-community
+    repo:   bui
+    private_key:  (( vault "secret/pipelines/bui/github:private" ))
+    access_token: (( vault "secret/pipelines/bui/github:token" ))
+
+  slack:
+    webhook: (( vault "secret/pipelines/bui/slack:webhook" ))
+    channel: '#botspam'
