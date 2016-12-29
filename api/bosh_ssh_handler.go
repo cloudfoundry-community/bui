@@ -100,7 +100,6 @@ func (b BOSHHandler) ssh(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Printf("Websocket upgrade failed: %s\n", err)
 	}
-	fmt.Println(response)
 
 	conn, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {

@@ -3,7 +3,6 @@ package bosh
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -144,23 +143,19 @@ func (c *Client) SSH(sshRequest SSHRequest, auth Auth) (sshResponses []SSHRespon
 		log.Printf("Error requesting ssh %v", err)
 		return
 	}
-	fmt.Println(string(respBody))
 	err = json.Unmarshal(respBody, &task)
 	if err != nil {
 		log.Printf("Error unmarshalling tasks for ssh result %v", err)
 		return
 	}
 	output := c.WaitForTaskResult(task.ID, auth)
+
 	err = json.Unmarshal([]byte(output[0]), &sshResponses)
 	if err != nil {
-		log.Printf("Error unmarshalling vms %v %v", output, err)
+		log.Printf("Error unmarshalling ssh response %v %v", output[0], err)
 		return
 	}
-	fmt.Println(output)
-	if err != nil {
-		log.Printf("Error unmarshalling ssh result %v %v", output[0], err)
-		return
-	}
+
 	return
 }
 

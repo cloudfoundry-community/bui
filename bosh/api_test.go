@@ -238,7 +238,7 @@ var _ = Describe("Api", func() {
 		Describe("Test post ssh", func() {
 			BeforeEach(func() {
 				setupMultiple([]MockRoute{
-					{"POST", "/deployments/foo/ssh", "", server.URL + "/tasks/2"},
+					{"POST", "/deployments/foo/ssh", sshProcessingTask, ""},
 					{"GET", "/tasks/2", sshTask, ""},
 					{"GET", "/tasks/2", sshTask, ""},
 					{"GET", "/tasks/2/output", sshResult, ""},
@@ -269,10 +269,10 @@ var _ = Describe("Api", func() {
 						Ids: []string{"1"},
 					},
 				}
-				sshResponse, err := client.SSH(sshRequest, auth)
+				sshResponses, err := client.SSH(sshRequest, auth)
 				Expect(err).Should(BeNil())
-				Expect(sshResponse.Status).Should(Equal("done"))
-				Expect(sshResponse.Job).Should(Equal("cell_z1"))
+				Expect(sshResponses[0].Status).Should(Equal("done"))
+				Expect(sshResponses[0].Job).Should(Equal("cell_z1"))
 			})
 		})
 
