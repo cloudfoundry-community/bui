@@ -1,0 +1,23 @@
+package: github.com/cloudfoundry-community/bui
+import:
+- package: github.com/coreos/go-log
+  subpackages:
+  - log
+- package: github.com/gorilla/mux
+- package: github.com/gorilla/sessions
+- package: github.com/gorilla/websocket
+- package: github.com/kr/pty
+- package: github.com/satori/go.uuid
+- package: github.com/starkandwayne/goutils
+  subpackages:
+  - log
+- package: github.com/voxelbrain/goptions
+- package: golang.org/x/crypto
+  subpackages:
+  - ssh
+- package: gopkg.in/yaml.v2
+testImport:
+- package: github.com/go-martini/martini
+- package: github.com/martini-contrib/render
+- package: github.com/onsi/ginkgo
+- package: github.com/onsi/gomega
