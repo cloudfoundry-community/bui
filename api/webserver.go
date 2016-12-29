@@ -3,9 +3,9 @@ package api
 import (
 	"net/http"
 
+	"github.com/cloudfoundry-community/bui/bosh"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/lnguyen/bui/bosh"
 	"github.com/starkandwayne/goutils/log"
 )
 

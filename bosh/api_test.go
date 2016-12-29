@@ -1,7 +1,7 @@
 package bosh_test
 
 import (
-	. "github.com/lnguyen/bui/bosh"
+	. "github.com/cloudfoundry-community/bui/bosh"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

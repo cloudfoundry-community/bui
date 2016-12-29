@@ -57,7 +57,7 @@
                                         <span class="label label-{{ getLabel(instance.job_state) }}">{{instance.job_state}}</span>
                                     </td>
                                     <td>
-                                      <button type="button" class="btn btn-sm btn-primary" ui-sref="deployment.ssh({name: name, vm_name: instance.job_name + '-' + instance.index})">SSH</button>
+                                      <button type="button" class="btn btn-sm btn-primary" ui-sref="app.deployment.ssh({name: name, vm_name: instance.job_name + '-' + instance.index})">SSH</button>
                                     </td>
                                 </tr>
                             </tbody>

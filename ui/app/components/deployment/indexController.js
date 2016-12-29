@@ -9,7 +9,6 @@ angular.module('deploymentIndex', [])
                     for (var i = 0; i < $scope.manifest.jobs.length; i++) {
                         $scope.instances_count += $scope.manifest.jobs[i].instances;
                     }
-                    console.log($scope.manifest)
                 })
                 .error(function(data, status) {
                     console.log("something went wrong getting deployment")

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lnguyen/bui/api"
+	"github.com/cloudfoundry-community/bui/api"
 	"github.com/starkandwayne/goutils/log"
 	"github.com/voxelbrain/goptions"
 )

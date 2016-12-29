@@ -10,10 +10,10 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/cloudfoundry-community/bui/bosh"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/kr/pty"
-	"github.com/lnguyen/bui/bosh"
 	uuid "github.com/satori/go.uuid"
 )
 

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	. "github.com/lnguyen/bui/bosh"
+	. "github.com/cloudfoundry-community/bui/bosh"
 
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"

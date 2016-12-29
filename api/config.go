@@ -3,8 +3,8 @@ package api
 import (
 	"io/ioutil"
 
+	"github.com/cloudfoundry-community/bui/bosh"
 	"github.com/gorilla/sessions"
-	"github.com/lnguyen/bui/bosh"
 
 	yaml "gopkg.in/yaml.v2"
 )

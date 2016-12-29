@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/lnguyen/bui/bosh"
+	. "github.com/cloudfoundry-community/bui/bosh"
 )
 
 var _ = Describe("BOSH Client", func() {

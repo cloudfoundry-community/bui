@@ -14,20 +14,12 @@
             <div class="auth-content">
                 <p class="text-xs-center">LOGIN TO CONTINUE</p>
                 <form id="login" novalidate="">
-                    <div class="form-group"> <label for="username">Username</label> <input type="text" class="form-control underlined" placeholder="Your username" name="username" required ng-model="user.name"> <span class="has-error">Please input username.</span></div>
-                    <div class="form-group has-error"> <label for="password">Password</label> <input type="password" class="form-control underlined" placeholder="Your password" name="password" required ng-model="user.password"> <span class="has-error">Please input password.</span></div>
+                    <div class="form-group"> <label for="username">Username</label> <input type="text" class="form-control underlined" placeholder="Your username" name="username" required ng-model="user.name"> </div>
+                    <div class="form-group"> <label for="password">Password</label> <input type="password" class="form-control underlined" placeholder="Your password" name="password" required ng-model="user.password"></div>
                     <div class="form-group"> <label for="remember">
           </label>
                         <div class="form-group"> <button class="btn btn-block btn-primary" ng-click="login(user)">Login</button> </div>
                 </form>
-
-                <div class="card card-danger">
-                    <div class="card-header">
-                        <div class="header-block">
-                            <p class="title"> User is not authorized </p>
-                        </div>
-                    </div>
-                </div>
 
                 </div>
             </div>

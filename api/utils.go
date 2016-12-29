@@ -10,8 +10,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/cloudfoundry-community/bui/bosh"
 	"github.com/gorilla/sessions"
-	"github.com/lnguyen/bui/bosh"
 
 	"golang.org/x/crypto/ssh"
 )

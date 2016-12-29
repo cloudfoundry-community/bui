@@ -4,7 +4,6 @@ function ($scope, $http, $stateParams) {
   console.log("MANIFEST BRO")
   $http.get('/deployments/' + $stateParams.name , config)
   .success(function(data, status) {
-    console.log(data)
     $scope.manifest = data.manifest
   })
   .error(function(data, status) {

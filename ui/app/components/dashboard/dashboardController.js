@@ -5,7 +5,6 @@ angular.module('dashboard', [])
                 $http.get('/tasks/running', config)
                     .success(function(data, status) {
                         $scope.running_tasks = data
-                        console.log($scope.running_tasks)
                     })
                     .error(function(data, status) {
                         console.log("something went wrong getting running tasks")
@@ -14,7 +13,6 @@ angular.module('dashboard', [])
             $http.get('/info', config)
                 .success(function(data, status) {
                     $scope.info = data
-                    console.log($scope.info)
                 })
                 .error(function(data, status) {
                     console.log("something went wrong getting info")

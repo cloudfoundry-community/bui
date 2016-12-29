@@ -4,6 +4,7 @@ angular.module('bui', [
     'ngCookies',
     'master',
     'dashboard',
+    'auth',
     'login',
     'deployment',
     'deploymentManifest',
@@ -17,9 +18,13 @@ angular.module('bui', [
 config(['$stateProvider', '$urlRouterProvider',
     function config($stateProvider, $urlRouterProvider) {
         'use strict';
-        $urlRouterProvider.otherwise('/');
+        $urlRouterProvider.otherwise('/login');
         $stateProvider
-            .state('index', {
+            .state('app', {
+              abstract: true,
+              templateUrl: 'app/components/dashboard/app.html'
+            })
+            .state('app.dashboard', {
                 url: '/',
                 templateUrl: 'app/components/dashboard/dashboard.html',
                 controller: 'DashboardController'
@@ -29,42 +34,42 @@ config(['$stateProvider', '$urlRouterProvider',
                 templateUrl: 'app/components/login/login.html',
                 controller: 'LoginController'
             })
-            .state('deployments', {
+            .state('app.deployments', {
                 url: '/deployments/',
                 templateUrl: 'app/components/deployments/deployments.html',
                 controller: 'DeploymentsController'
             })
-            .state('deployment', {
+            .state('app.deployment', {
                 url: '^/deployments/:name',
                 templateUrl: 'app/components/deployment/deployment.html',
                 controller: 'DeploymentController'
             })
-            .state('deployment.index', {
+            .state('app.deployment.index', {
                 url: '/index',
                 templateUrl: 'app/components/deployment/index.html',
                 controller: 'DeploymentIndexController'
             })
-            .state('deployment.manifest', {
+            .state('app.deployment.manifest', {
                 url: '/manifest',
                 templateUrl: 'app/components/deployment/manifest.html',
                 controller: 'DeploymentManifestController'
             })
-            .state('deployment.instances', {
+            .state('app.deployment.instances', {
                 url: '/instances',
                 templateUrl: 'app/components/deployment/instances.html',
                 controller: 'DeploymentInstancesController'
             })
-            .state('deployment.ssh', {
+            .state('app.deployment.ssh', {
                 url: '/vms/:vm_name/ssh',
                 templateUrl: 'app/components/deployment/ssh.html',
                 controller: 'DeploymentSSHController'
             })
-            .state('stemcells', {
+            .state('app.stemcells', {
                 url: '/stemcells/',
                 templateUrl: 'app/components/stemcells/stemcells.html',
                 controller: 'StemcellsController'
             })
-            .state('releases', {
+            .state('app.releases', {
                 url: '/releases/',
                 templateUrl: 'app/components/releases/releases.html',
                 controller: 'ReleasesController'

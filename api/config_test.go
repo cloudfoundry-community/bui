@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/lnguyen/bui/api"
+	. "github.com/cloudfoundry-community/bui/api"
 )
 
 var _ = Describe("API Configuration", func() {

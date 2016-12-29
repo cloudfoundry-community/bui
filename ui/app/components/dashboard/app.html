@@ -1,0 +1,125 @@
+<div class="main-wrapper" ng-controller="MasterController">
+    <div class="app" id="app">
+        <header class="header">
+            <div class="header-block header-block-collapse hidden-lg-up"> <button class="collapse-btn" id="sidebar-collapse-btn">
+    <i class="fa fa-bars"></i>
+  </button> </div>
+            <div class="header-block header-block-nav">
+                <ul class="nav-profile">
+                    <li class="profile dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="name">
+          {{user.name}}
+        </span> </a>
+                        <div  data-toggle="dropdown" class="dropdown-menu profile-dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <a class="dropdown-item" ui-sref="login" ng-click="logout()"> <i class="fa fa-power-off icon"></i> Logout </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </header>
+        <aside class="sidebar">
+            <div class="sidebar-container">
+                <div class="sidebar-header">
+                    <div class="brand">
+                        <div class="logo"> <span class="l l1"></span> <span class="l l2"></span> <span class="l l3"></span> <span class="l l4"></span> <span class="l l5"></span> </div> BOSH Admin UI </div>
+                </div>
+                <nav class="menu">
+                    <ul class="nav metismenu" id="sidebar-menu">
+                        <li ui-sref-active="active">
+                            <a ui-sref="app.dashboard"> <i class="fa fa-home"></i> Dashboard </a>
+                        </li>
+                        <li ui-sref-active="active">
+                            <a ui-sref="app.deployments"> <i class="fa fa-archive"></i> Deployments <i class="fa arrow"></i></a>
+                            <ul class="collaspe">
+                                <li ui-sref-active="{'active': 'app.deployment({name: deployment.name})'}" ng-repeat="deployment in deployments">
+                                    <a ui-sref="app.deployment.index({name: deployment.name})"> {{deployment.name}} </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li ui-sref-active="active">
+                            <a ui-sref="app.stemcells"> <i class="fa fa-desktop"></i> Stemcells </a>
+                        </li>
+                        <li ui-sref-active="active">
+                            <a ui-sref="app.releases"> <i class="fa fa-upload"></i> Releases </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <footer class="sidebar-footer">
+                <ul class="nav metismenu" id="customize-menu">
+                    <li>
+                        <ul>
+                            <li class="customize">
+                                <div class="customize-item">
+                                    <div class="row customize-header">
+                                        <div class="col-xs-4"> </div>
+                                        <div class="col-xs-4"> <label class="title">fixed</label> </div>
+                                        <div class="col-xs-4"> <label class="title">static</label> </div>
+                                    </div>
+                                    <div class="row hidden-md-down">
+                                        <div class="col-xs-4"> <label class="title">Sidebar:</label> </div>
+                                        <div class="col-xs-4"> <label>
+                              <input class="radio" type="radio" name="sidebarPosition" value="sidebar-fixed" >
+                              <span></span>
+                          </label> </div>
+                                        <div class="col-xs-4"> <label>
+                              <input class="radio" type="radio" name="sidebarPosition" value="">
+                              <span></span>
+                          </label> </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-4"> <label class="title">Header:</label> </div>
+                                        <div class="col-xs-4"> <label>
+                              <input class="radio" type="radio" name="headerPosition" value="header-fixed">
+                              <span></span>
+                          </label> </div>
+                                        <div class="col-xs-4"> <label>
+                              <input class="radio" type="radio" name="headerPosition" value="">
+                              <span></span>
+                          </label> </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-4"> <label class="title">Footer:</label> </div>
+                                        <div class="col-xs-4"> <label>
+                              <input class="radio" type="radio" name="footerPosition" value="footer-fixed">
+                              <span></span>
+                          </label> </div>
+                                        <div class="col-xs-4"> <label>
+                              <input class="radio" type="radio" name="footerPosition" value="">
+                              <span></span>
+                          </label> </div>
+                                    </div>
+                                </div>
+                                <div class="customize-item">
+                                    <ul class="customize-colors">
+                                        <li> <span class="color-item color-red" data-theme="red"></span> </li>
+                                        <li> <span class="color-item color-orange" data-theme="orange"></span> </li>
+                                        <li> <span class="color-item color-green" data-theme="green"></span> </li>
+                                        <li> <span class="color-item color-seagreen" data-theme="seagreen"></span> </li>
+                                        <li> <span class="color-item color-blue active" data-theme=""></span> </li>
+                                        <li> <span class="color-item color-purple" data-theme="purple"></span> </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                        <a href=""> <i class="fa fa-cog"></i> Customize </a>
+                    </li>
+                </ul>
+            </footer>
+        </aside>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <ui-view></ui-view>
+        <footer class="footer">
+            <div class="footer-block buttons"> <iframe class="footer-github-btn" src="https://ghbtns.com/github-btn.html?user=modularcode&repo=modular-admin-html&type=star&count=true" frameborder="0" scrolling="0" width="140px" height="20px"></iframe> </div>
+            <div class="footer-block author">
+                <ul>
+                    <li> made with <em class="fa fa-heart"></em> by <a href="https://www.starkandwayne.com/">Stark & Wayne</a> </li>
+                    <li> Theme by <a href="https://github.com/modularcode">ModularCode</a> </li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+
+
+</div>

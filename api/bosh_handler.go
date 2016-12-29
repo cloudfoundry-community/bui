@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/cloudfoundry-community/bui/bosh"
 	"github.com/coreos/go-log/log"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/lnguyen/bui/bosh"
 )
 
 type BOSHHandler struct {

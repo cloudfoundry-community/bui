@@ -1,6 +1,6 @@
 angular.module('login',[])
-.controller('LoginController', ['$scope','$http','$window',
-function ($scope, $http, $window) {
+.controller('LoginController', ['$scope','$http','$state','$window','Auth',
+function ($scope, $http, $state, $window, Auth) {
   $scope.login = function(user) {
       var data = $.param({
           auth_type: "basic",
@@ -14,8 +14,10 @@ function ($scope, $http, $window) {
       }
       $http.post('/login', data, config)
       .success(function(data, status) {
+        Auth.setUser(data)
         console.log("login")
-        $window.location.href = '#/dashboard'
+        console.log(data)
+        $state.go('app.dashboard')
       })
       .error(function(data, status) {
         console.log("fail")
