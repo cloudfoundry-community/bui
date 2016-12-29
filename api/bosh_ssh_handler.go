@@ -164,7 +164,8 @@ func (b BOSHHandler) ssh(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
-	sshCleanup := bosh.SSHRequest{
+	// TODO: Clean up SSH
+	/*sshCleanup := bosh.SSHRequest{
 		Command:        "cleanup",
 		DeploymentName: name,
 		Target: bosh.Target{
@@ -180,6 +181,5 @@ func (b BOSHHandler) ssh(w http.ResponseWriter, req *http.Request) {
 		log.Printf("Websocket upgrade failed: %s\n", err)
 		return
 	}
-	fmt.Println(response)
-	wp.Stop()
+	wp.Stop()*/
 }
