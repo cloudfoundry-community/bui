@@ -96,7 +96,7 @@ func (b BOSHHandler) ssh(w http.ResponseWriter, req *http.Request) {
 			"public_key": string(pubKey),
 		},
 	}
-	response, err := b.BoshClient.SSH(sshRequest, auth)
+	response, err := b.BOSHClient.SSH(sshRequest, auth)
 	if err != nil {
 		log.Printf("Websocket upgrade failed: %s\n", err)
 	}

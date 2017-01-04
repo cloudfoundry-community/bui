@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/cloudfoundry-community/bui/bosh"
+	"github.com/cloudfoundry-community/bui/uaa"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/starkandwayne/goutils/log"
@@ -14,14 +15,19 @@ type WebServer struct {
 	WebRoot       string
 	Api           *Api
 	CookieSession *sessions.CookieStore
-	BoshClient    *bosh.Client
+	BOSHClient    *bosh.Client
+	UAAClient     *uaa.Client
 }
 
 // Setup webserver
 func (ws *WebServer) Setup() error {
 	log.Debugf("Configuring WebServer...")
 
-	boshHandler := BOSHHandler{CookieSession: ws.CookieSession, BoshClient: ws.BoshClient}
+	boshHandler := BOSHHandler{
+		CookieSession: ws.CookieSession,
+		BOSHClient:    ws.BOSHClient,
+		UAAClient:     ws.UAAClient,
+	}
 
 	r := mux.NewRouter()
 	r.Handle("/info2", AuthHandler(ws.CookieSession, http.HandlerFunc(boshHandler.info))).Methods("GET")

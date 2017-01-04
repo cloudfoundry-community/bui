@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 
 	"github.com/cloudfoundry-community/bui/bosh"
+	"github.com/cloudfoundry-community/bui/uaa"
 	"github.com/gorilla/sessions"
 
 	yaml "gopkg.in/yaml.v2"
@@ -12,8 +13,14 @@ import (
 type Config struct {
 	Addr         string `yaml:"listen_addr"`
 	BoshAddr     string `yaml:"bosh_addr"`
+	UAA          UAA    `yaml:"uaa"`
 	WebRoot      string `yaml:"web_root"`
 	CookieSecret string `yaml:"cookie_secret"`
+}
+
+type UAA struct {
+	ClientID     string `yaml:"client_id"`
+	ClientSecret string `yaml:"client_secret"`
 }
 
 func (a *Api) ReadConfig(path string) error {
@@ -44,9 +51,29 @@ func (a *Api) ReadConfig(path string) error {
 		config.BoshAddr = "https://192.168.50.4:25555"
 	}
 
+	var uaaClient *uaa.Client
+
 	boshConfig := bosh.DefaultConfig()
 	boshConfig.BOSHAddress = config.BoshAddr
 	boshClient, err := bosh.NewClient(boshConfig)
+	if err != nil {
+		return err
+	}
+	boshInfo, err := boshClient.GetInfo()
+	if err != nil {
+		return err
+	}
+	if boshInfo.UserAuthenication.Type == "uaa" {
+		uaaConfig := uaa.DefaultConfig()
+		uaaConfig.Address = boshInfo.UserAuthenication.Options.URL
+		uaaConfig.ClientID = config.UAA.ClientID
+		uaaConfig.ClientSecret = config.UAA.ClientSecret
+		uaaClient, err = uaa.NewClient(uaaConfig)
+		if err != nil {
+			return err
+		}
+	}
+
 	if err != nil {
 		return err
 	}
@@ -56,7 +83,8 @@ func (a *Api) ReadConfig(path string) error {
 		WebRoot:       config.WebRoot,
 		Api:           a,
 		CookieSession: sessions.NewCookieStore([]byte(config.CookieSecret)),
-		BoshClient:    boshClient,
+		BOSHClient:    boshClient,
+		UAAClient:     uaaClient,
 	}
 	a.Web = &ws
 	return nil
