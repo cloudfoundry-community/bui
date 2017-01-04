@@ -30,11 +30,6 @@ var _ = Describe("API Configuration", func() {
 			Ω(a.ReadConfig("test/etc/config.xml")).ShouldNot(Succeed())
 		})
 
-		It("handles YAML files with missing directives", func() {
-			Ω(a.ReadConfig("test/etc/empty.yml")).Should(Succeed())
-			Ω(a.Web.Addr).Should(Equal(":9304"))
-		})
-
 		It("handles YAML files with all the directives", func() {
 			config := Config{
 				BoshAddr: server.URL,
