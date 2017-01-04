@@ -11,11 +11,12 @@ import (
 )
 
 type Config struct {
-	Addr         string `yaml:"listen_addr"`
-	BoshAddr     string `yaml:"bosh_addr"`
-	UAA          UAA    `yaml:"uaa"`
-	WebRoot      string `yaml:"web_root"`
-	CookieSecret string `yaml:"cookie_secret"`
+	Addr              string `yaml:"listen_addr"`
+	BoshAddr          string `yaml:"bosh_addr"`
+	UAA               UAA    `yaml:"uaa"`
+	WebRoot           string `yaml:"web_root"`
+	CookieSecret      string `yaml:"cookie_secret"`
+	SkipSSLValidation bool   `yaml:"skip_ssl_validation"`
 }
 
 type UAA struct {
@@ -55,6 +56,7 @@ func (a *Api) ReadConfig(path string) error {
 
 	boshConfig := bosh.DefaultConfig()
 	boshConfig.BOSHAddress = config.BoshAddr
+	boshConfig.SkipSslValidation = config.SkipSSLValidation
 	boshClient, err := bosh.NewClient(boshConfig)
 	if err != nil {
 		return err
@@ -68,6 +70,7 @@ func (a *Api) ReadConfig(path string) error {
 		uaaConfig.Address = boshInfo.UserAuthenication.Options.URL
 		uaaConfig.ClientID = config.UAA.ClientID
 		uaaConfig.ClientSecret = config.UAA.ClientSecret
+		uaaConfig.SkipSslValidation = config.SkipSSLValidation
 		uaaClient, err = uaa.NewClient(uaaConfig)
 		if err != nil {
 			return err
