@@ -5,7 +5,7 @@ angular.module('deploymentIndex', [])
             $scope.instances_count = 0
             $http.get('/deployments/' + $stateParams.name, config)
                 .success(function(data, status) {
-                    $scope.manifest = YAML.parse(data.manifest)
+                    $scope.manifest = jsyaml.load(data.manifest)
                     for (var i = 0; i < $scope.manifest.jobs.length; i++) {
                         $scope.instances_count += $scope.manifest.jobs[i].instances;
                     }
