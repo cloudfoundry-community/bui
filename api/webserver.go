@@ -38,7 +38,7 @@ func (ws *WebServer) Setup() error {
 	r.Handle("/stemcells", AuthHandler(ws.CookieSession, http.HandlerFunc(boshHandler.stemcells))).Methods("GET")
 	r.Handle("/deployments", AuthHandler(ws.CookieSession, http.HandlerFunc(boshHandler.deployments))).Methods("GET")
 	r.Handle("/deployments/{name}", AuthHandler(ws.CookieSession, http.HandlerFunc(boshHandler.deployment))).Methods("GET")
-	r.Handle("/deployments/{name}/vms", AuthHandler(ws.CookieSession, http.HandlerFunc(boshHandler.deploymentVMs))).Methods("GET")
+	r.Handle("/deployments/{name}/vms", AuthHandler(ws.CookieSession, http.HandlerFunc(boshHandler.deployment_vms))).Methods("GET")
 	r.Handle("/deployments/{name}/vms/{vm}/ssh", AuthHandler(ws.CookieSession, http.HandlerFunc(boshHandler.ssh)))
 	r.Handle("/tasks/running", AuthHandler(ws.CookieSession, http.HandlerFunc(boshHandler.running_tasks))).Methods("GET")
 	r.HandleFunc("/sessions", boshHandler.sessions).Methods("GET")
