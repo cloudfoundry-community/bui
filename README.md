@@ -50,8 +50,19 @@ The default credentials is admin/admin.
 * List deployments
 * SSH Support! ![](https://github.com/cloudfoundry-community/bui/raw/master/images/BOSH_Admin_UI.png)
 
-## Update dependencies
+## Development
+#### Dependencies
+`glide install -v -s`
 
+#### Running Development build
 ```
-glide install -v -s
+npm install
+grunt uglify
+go run main.go
 ```
+
+If only updating html and javascript, you only need to refresh the package
+
+#### Handy Notes
+* If you don't have grunt, then do 'sudo npm install -g grunt'
+
