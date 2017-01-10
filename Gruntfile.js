@@ -5,10 +5,10 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         watch: {
             all: {
-              files: ['ui/app/**/.*.js'],
+              files: ['ui/app/**/*.js'],
               tasks: ['uglify']
             },
-            files: ['ui/app/**/.*.js'],
+            files: ['ui/app/**/*.js'],
             tasks: ['uglify'],
         },
         uglify: {
