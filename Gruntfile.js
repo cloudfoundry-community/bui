@@ -6,7 +6,10 @@ module.exports = function(grunt) {
         watch: {
             all: {
               files: ['ui/app/**/*.js'],
-              tasks: ['uglify']
+              tasks: ['uglify'],
+              options: {
+                livereload: true,
+              },
             },
             files: ['ui/app/**/*.js'],
             tasks: ['uglify'],
