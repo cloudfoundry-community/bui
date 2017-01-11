@@ -57,8 +57,13 @@ The default credentials is admin/admin.
 #### Running Development build
 ```
 npm install
-grunt uglify
+npm run build
 go run main.go
+```
+
+### Live Reload for UI
+```
+grunt watch
 ```
 
 If only updating html and javascript, you only need to refresh the package
