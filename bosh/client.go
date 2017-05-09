@@ -11,16 +11,23 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/cloudfoundry-community/bui/uaa"
 )
 
 //Client used to communicate with BOSH
 type Client struct {
-	config Config
+	config    Config
+	UAAClient *uaa.Client
 }
 
 //Config is used to configure the creation of a client
 type Config struct {
-	BOSHAddress       string
+	BOSHAddress string
+	UAA         struct {
+		ClientID     string
+		ClientSecret string
+	}
 	HttpClient        *http.Client
 	SkipSslValidation bool
 }
@@ -79,8 +86,28 @@ func NewClient(config *Config) (*Client, error) {
 	client := &Client{
 		config: *config,
 	}
+	boshInfo, err := client.GetInfo()
+	if err != nil {
+		return nil, err
+	}
+	if boshInfo.UserAuthenication.Type == "uaa" {
+		uaaConfig := uaa.DefaultConfig()
+		uaaConfig.Address = boshInfo.UserAuthenication.Options.URL
+		uaaConfig.ClientID = config.UAA.ClientID
+		uaaConfig.ClientSecret = config.UAA.ClientSecret
+		uaaConfig.SkipSslValidation = config.SkipSslValidation
+		client.UAAClient, err = uaa.NewClient(uaaConfig)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return client, nil
+}
+
+// GetPasswordToken from UAA
+func (c *Client) GetPasswordToken(username, password string) (tokenResp uaa.TokenResp, err error) {
+	return c.UAAClient.GetPasswordToken(username, password)
 }
 
 // GetInfo returns BOSH Info

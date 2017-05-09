@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/cloudfoundry-community/bui/bosh"
-	"github.com/cloudfoundry-community/bui/uaa"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/starkandwayne/goutils/log"
@@ -15,7 +14,6 @@ import (
 type BOSHHandler struct {
 	CookieSession *sessions.CookieStore
 	BOSHClient    *bosh.Client
-	UAAClient     *uaa.Client
 }
 
 type ErrorResponse struct {
@@ -69,7 +67,7 @@ func (b BOSHHandler) login(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if info.UserAuthenication.Type == "uaa" {
-		tokenResp, err := b.UAAClient.GetPasswordToken(username, password)
+		tokenResp, err := b.BOSHClient.GetPasswordToken(username, password)
 		if err != nil {
 			log.Errorf("login - BOSH Get Password Token %s", err.Error())
 			b.respond(w, http.StatusInternalServerError, ErrorResponse{

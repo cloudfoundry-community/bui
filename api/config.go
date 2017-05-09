@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 
 	"github.com/cloudfoundry-community/bui/bosh"
-	"github.com/cloudfoundry-community/bui/uaa"
 	"github.com/gorilla/sessions"
 
 	yaml "gopkg.in/yaml.v2"
@@ -52,31 +51,12 @@ func (a *Api) ReadConfig(path string) error {
 		config.BoshAddr = "https://192.168.50.4:25555"
 	}
 
-	var uaaClient *uaa.Client
-
 	boshConfig := bosh.DefaultConfig()
 	boshConfig.BOSHAddress = config.BoshAddr
 	boshConfig.SkipSslValidation = config.SkipSSLValidation
+	boshConfig.UAA.ClientID = config.UAA.ClientID
+	boshConfig.UAA.ClientSecret = config.UAA.ClientSecret
 	boshClient, err := bosh.NewClient(boshConfig)
-	if err != nil {
-		return err
-	}
-	boshInfo, err := boshClient.GetInfo()
-	if err != nil {
-		return err
-	}
-	if boshInfo.UserAuthenication.Type == "uaa" {
-		uaaConfig := uaa.DefaultConfig()
-		uaaConfig.Address = boshInfo.UserAuthenication.Options.URL
-		uaaConfig.ClientID = config.UAA.ClientID
-		uaaConfig.ClientSecret = config.UAA.ClientSecret
-		uaaConfig.SkipSslValidation = config.SkipSSLValidation
-		uaaClient, err = uaa.NewClient(uaaConfig)
-		if err != nil {
-			return err
-		}
-	}
-
 	if err != nil {
 		return err
 	}
