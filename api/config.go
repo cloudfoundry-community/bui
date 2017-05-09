@@ -67,7 +67,6 @@ func (a *Api) ReadConfig(path string) error {
 		Api:           a,
 		CookieSession: sessions.NewCookieStore([]byte(config.CookieSecret)),
 		BOSHClient:    boshClient,
-		UAAClient:     uaaClient,
 	}
 	a.Web = &ws
 	return nil

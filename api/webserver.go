@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/cloudfoundry-community/bui/bosh"
-	"github.com/cloudfoundry-community/bui/uaa"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/starkandwayne/goutils/log"
@@ -16,7 +15,6 @@ type WebServer struct {
 	Api           *Api
 	CookieSession *sessions.CookieStore
 	BOSHClient    *bosh.Client
-	UAAClient     *uaa.Client
 }
 
 // Setup webserver
@@ -26,7 +24,6 @@ func (ws *WebServer) Setup() error {
 	boshHandler := BOSHHandler{
 		CookieSession: ws.CookieSession,
 		BOSHClient:    ws.BOSHClient,
-		UAAClient:     ws.UAAClient,
 	}
 
 	r := mux.NewRouter()
